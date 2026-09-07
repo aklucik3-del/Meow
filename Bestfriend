@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Для самой лучшей подруги 💗</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       VARIABLES & THEMES
+       ========================================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #f0f8ff 100%);
+      --text-color: #5c4b51;
+      --heading-color: #ff6b8b;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(255, 182, 193, 0.4);
+      --accent-color: #ff8fa3;
+      --accent-hover: #ff758f;
+      --accent-shadow: rgba(255, 143, 163, 0.4);
+      --glass-shadow: 0 10px 30px rgba(255, 182, 193, 0.2);
+      --radius: 24px;
+      --font-main: 'Nunito', sans-serif;
+      --font-hand: 'Caveat', cursive;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #1a162b 0%, #2a1b3d 50%, #150e28 100%);
+      --text-color: #e2d9f3;
+      --heading-color: #ff9ebb;
+      --card-bg: rgba(35, 25, 55, 0.75);
+      --card-border: rgba(186, 104, 200, 0.3);
+      --accent-color: #b57edc;
+      --accent-hover: #a060d0;
+      --accent-shadow: rgba(181, 126, 220, 0.4);
+      --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+       BASE STYLES
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--text-color);
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s ease, color 0.8s ease;
+      position: relative;
+    }
+
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    /* GLASSMORPHISM CARD */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--glass-shadow);
+      padding: 28px;
+      width: 100%;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, background 0.8s ease;
+    }
+
+    /* BUTTONS */
+    .btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px var(--accent-shadow);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 25px var(--accent-shadow);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* RIPPLE EFFECT */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0);
+      animation: ripple-anim 0.6s linear;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-anim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(8px);
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: rotate(15deg) scale(1.1);
+    }
+
+    /* ANIMATIONS ON SCROLL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       SECTION 1: HERO
+       ========================================================================== */
+    .hero h1 {
+      font-size: 2.5rem;
+      color: var(--heading-color);
+      margin-bottom: 15px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
+    }
+
+    .floating-decor {
+      font-size: 3rem;
+      animation: float 4s ease-in-out infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    /* ==========================================================================
+       SECTION 2: ABOUT YOU
+       ========================================================================== */
+    .about-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .about-card {
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+    }
+
+    .about-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 35px var(--accent-shadow);
+    }
+
+    .about-card .icon {
+      font-size: 2rem;
+    }
+
+    .about-card p {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       SECTION 3: INTERACTIVE GIFT
+       ========================================================================== */
+    .gift-box-wrapper {
+      position: relative;
+      cursor: pointer;
+      margin: 30px 0;
+    }
+
+    .gift-box {
+      font-size: 6rem;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: inline-block;
+    }
+
+    .gift-box-wrapper:hover .gift-box {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .gift-box.open {
+      animation: giftOpen 0.6s forwards;
+    }
+
+    @keyframes giftOpen {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3) rotate(10deg); }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    .gift-message {
+      display: none;
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       SECTION 4: MINI QUEST
+       ========================================================================== */
+    .quest-card {
+      text-align: left;
+    }
+
+    .quest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .quest-stars {
+      font-size: 1.2rem;
+    }
+
+    .quiz-question {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--heading-color);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid var(--card-border);
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-color);
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .quiz-opt {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .quiz-opt:hover {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .quiz-feedback {
+      margin-top: 15px;
+      font-weight: 700;
+      min-height: 24px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: ENVELOPE / LETTER
+       ========================================================================== */
+    .envelope-wrapper {
+      perspective: 1000px;
+      cursor: pointer;
+      margin: 20px 0;
+    }
+
+    .envelope {
+      width: 220px;
+      height: 140px;
+      background: #ffb3c1;
+      border-radius: 12px;
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      transition: transform 0.4s ease;
+    }
+
+    .envelope-wrapper:hover .envelope {
+      transform: translateY(-5px);
+    }
+
+    .letter-card {
+      display: none;
+      text-align: left;
+      font-family: var(--font-hand);
+      font-size: 1.6rem;
+      line-height: 1.5;
+      color: var(--text-color);
+      position: relative;
+    }
+
+    .letter-card p {
+      min-height: 100px;
+    }
+
+    /* ==========================================================================
+       SECTION 6: SECRET BUTTON
+       ========================================================================== */
+    .secret-box {
+      margin-top: 15px;
+    }
+
+    .secret-counter {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    /* ==========================================================================
+       SECTION 7: PET CHARACTER
+       ========================================================================== */
+    .pet-container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .pet-speech {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: var(--glass-shadow);
+      margin-bottom: 6px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      max-width: 150px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .pet-speech.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pet-avatar {
+      font-size: 3rem;
+      animation: petIdle 3s infinite ease-in-out;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+      user-select: none;
+    }
+
+    @keyframes petIdle {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.05); }
+    }
+
+    .pet-avatar.bounce {
+      animation: petBounce 0.5s ease;
+    }
+
+    @keyframes petBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3) rotate(10deg); }
+    }
+
+    /* REDUCED MOTION */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .glass-card { padding: 20px; }
+      .pet-container { bottom: 10px; left: 10px; }
+      .pet-avatar { font-size: 2.5rem; }
+      .letter-card { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Particles Canvas -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeBtn" aria-label="Сменить тему">☀️</button>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="floating-decor">🎀</div>
+      <h1 class="reveal">Для самой лучшей подруги 💗</h1>
+      <p class="reveal">Я приготовил для тебя кое-что маленькое и очень милое...</p>
+      <button class="btn reveal" id="startBtn">Открыть подарок 🎁</button>
+    </section>
+
+    <!-- ABOUT YOU SECTION -->
+    <section id="about" class="reveal">
+      <h2 style="color: var(--heading-color); margin-bottom: 25px;">Немного о тебе 🌸</h2>
+      <div class="about-cards">
+        <div class="glass-card about-card">
+          <span class="icon">💗</span>
+          <p>Ты делаешь обычные дни намного приятнее</p>
+        </div>
+        <div class="glass-card about-card">
+          <span class="icon">🌸</span>
+          <p>С тобой всегда есть о чём поговорить</p>
+        </div>
+        <div class="glass-card about-card">
+          <span class="icon">✨</span>
+          <p>Ты человек, которого хочется беречь</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE GIFT SECTION -->
+    <section id="gift" class="reveal">
+      <div class="glass-card">
+        <h2 style="color: var(--heading-color); margin-bottom: 10px;">Интерактивный подарок</h2>
+        <p style="margin-bottom: 20px;">Тут кое-что спрятано...</p>
+        
+        <div class="gift-box-wrapper" id="giftBoxWrapper">
+          <div class="gift-box" id="giftBox">🎁</div>
+        </div>
+
+        <button class="btn" id="openGiftBtn">Открыть 🎀</button>
+
+        <div class="gift-message" id="giftMessage">
+          <p style="font-size: 1.2rem; font-weight: 700; color: var(--heading-color);">
+            Сюрприз! Ты заслуживаешь намного больше, чем просто одну коробочку 💗
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MINI QUEST SECTION -->
+    <section id="quest" class="reveal">
+      <div class="glass-card quest-card">
+        <div class="quest-header">
+          <h2 style="color: var(--heading-color); font-size: 1.4rem;">Мини-квест для тебя 🌸</h2>
+          <div class="quest-stars" id="questStars">⭐ 0/3</div>
+        </div>
+
+        <div id="quizContainer">
+          <div class="quiz-question" id="quizQuestion">Загрузка загадки...</div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LETTER SECTION -->
+    <section id="letter" class="reveal">
+      <div class="glass-card">
+        <h2 style="color: var(--heading-color); margin-bottom: 15px;">У тебя новое письмо 💌</h2>
+        
+        <div class="envelope-wrapper" id="envelopeWrapper">
+          <div class="envelope" id="envelope">✉️</div>
+        </div>
+
+        <button class="btn" id="openLetterBtn">Открыть письмо</button>
+
+        <div class="letter-card" id="letterCard">
+          <p id="typedText"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECRET BUTTON SECTION -->
+    <section id="secret" class="reveal">
+      <div class="glass-card secret-box">
+        <h2 style="color: var(--heading-color); margin-bottom: 15px;">Маленькая тайна 👀</h2>
+        <button class="btn" id="secretBtn">Нажми сюда 👀</button>
+        <div class="secret-counter" id="secretCounter">Нажатий: 0</div>
+      </div>
+    </section>
+
+    <!-- FINAL SECTION -->
+    <section id="final" class="reveal">
+      <h1 style="color: var(--heading-color); margin-bottom: 15px;">Вот и всё... 💗</h1>
+      <p style="font-size: 1.2rem; margin-bottom: 25px;">Но это ещё не значит, что милые сюрпризы закончились.</p>
+      <button class="btn" id="restartBtn">Начать сначала 🔄</button>
+    </section>
+
+  </div>
+
+  <!-- PET CHARACTER -->
+  <div class="pet-container" id="petContainer">
+    <div class="pet-speech" id="petSpeech">Приветик! 🐻</div>
+    <div class="pet-avatar" id="petAvatar">🐻</div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    /* ==========================================================================
+       AUDIO SYNTHESIZER (Web Audio API - No external files needed)
+       ========================================================================== */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'win') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        // Fallback if audio fails
+      }
+    }
+
+    /* ==========================================================================
+       PARTICLES BACKGROUND CANVAS
+       ========================================================================== */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleTypes = ['✨', '🌸', '☁️', '🤍', '⭐'];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 20;
+        this.size = Math.random() * 14 + 10;
+        this.speedY = Math.random() * 0.8 + 0.3;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.4;
+        this.type = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+        this.opacity = Math.random() * 0.5 + 0.3;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        if (this.y < -30) this.reset();
+      }
+      draw() {
+        ctx.globalAlpha = this.opacity;
+        ctx.font = `${this.size}px serif`;
+        ctx.fillText(this.type, this.x, this.y);
+      }
+    }
+
+    // Adjust particle count for mobile performance
+    const particleCount = window.innerWidth < 480 ? 15 : 30;
+    for (let i = 0; i < particleCount; i++) {
+      const p = new Particle();
+      p.y = Math.random() * canvas.height; // Spread initially
+      particles.push(p);
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ==========================================================================
+       RIPPLE & BURST EFFECTS
+       ========================================================================== */
+    document.addEventListener('click', (e) => {
+      // Ripple Effect on Buttons
+      if (e.target.classList.contains('btn')) {
+        const btn = e.target;
+        const rect = btn.getBoundingClientRect();
+        const circle = document.createElement('span');
+        circle.classList.add('ripple');
+        circle.style.left = `${e.clientX - rect.left}px`;
+        circle.style.top = `${e.clientY - rect.top}px`;
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+      }
+    });
+
+    function triggerHeartBurst(x, y) {
+      confetti({
+        particleCount: 15,
+        spread: 60,
+        origin: { x: x / window.innerWidth, y: y / window.innerHeight },
+        shapes: ['circle'],
+        colors: ['#ffb3c1', '#ff8fa3', '#ffffff']
+      });
+    }
+
+    /* ==========================================================================
+       SCROLL REVEAL ANIMATIONS
+       ========================================================================== */
+    const reveals = document.querySelectorAll('.reveal');
+    function checkReveal() {
+      const triggerBottom = window.innerHeight * 0.85;
+      reveals.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < triggerBottom) {
+          el.classList.add('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', checkReveal);
+    checkReveal();
+
+    /* ==========================================================================
+       HERO & NAVIGATION
+       ========================================================================== */
+    document.getElementById('startBtn').addEventListener('click', (e) => {
+      playSound('pop');
+      confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 } });
+      document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    /* ==========================================================================
+       CARD INTERACTIONS
+       ========================================================================== */
+    document.querySelectorAll('.about-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        playSound('pop');
+        const rect = card.getBoundingClientRect();
+        triggerHeartBurst(e.clientX, e.clientY);
+      });
+    });
+
+    /* ==========================================================================
+       INTERACTIVE GIFT
+       ========================================================================== */
+    const openGiftBtn = document.getElementById('openGiftBtn');
+    const giftBox = document.getElementById('giftBox');
+    const giftMessage = document.getElementById('giftMessage');
+
+    openGiftBtn.addEventListener('click', () => {
+      playSound('win');
+      giftBox.classList.add('open');
+      openGiftBtn.style.display = 'none';
+
+      confetti({
+        particleCount: 80,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#ff8fa3', '#fff', '#ffc6ff']
+      });
+
+      setTimeout(() => {
+        giftBox.style.display = 'none';
+        giftMessage.style.display = 'block';
+      }, 500);
+    });
+
+    /* ==========================================================================
+       MINI QUEST (QUIZ)
+       ========================================================================== */
+    const quizData = [
+      {
+        q: "Что становится больше, когда им делятся?",
+        opts: ["Секрет", "Радость", "Печенька"],
+        a: 1
+      },
+      {
+        q: "Что может летать без крыльев и плакать без глаз?",
+        opts: ["Облако", "Время", "Сон"],
+        a: 0
+      },
+      {
+        q: "Какой день самое лучшее время для улыбки?",
+        opts: ["Завтра", "Вчера", "Сегодня"],
+        a: 2
+      }
+    ];
+
+    let currentQuest = 0;
+    let score = 0;
+
+    const quizQuestion = document.getElementById('quizQuestion');
+    const quizOptions = document.getElementById('quizOptions');
+    const quizFeedback = document.getElementById('quizFeedback');
+    const questStars = document.getElementById('questStars');
+
+    function loadQuest() {
+      if (currentQuest >= quizData.length) {
+        document.getElementById('quizContainer').innerHTML = `
+          <div style="text-align: center; padding: 10px;">
+            <h3 style="color: var(--heading-color); font-size: 1.4rem;">Ты прошла весь мини-квест! 🎉</h3>
+            <p style="margin-top: 10px; font-weight: 700;">Ты умничка и отлично справилась! ✨</p>
+          </div>
+        `;
+        confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 } });
+        return;
+      }
+
+      const item = quizData[currentQuest];
+      quizQuestion.textContent = `${currentQuest + 1}. ${item.q}`;
+      quizOptions.innerHTML = '';
+      quizFeedback.textContent = '';
+
+      item.opts.forEach((optText, index) => {
+        const btn = document.createElement('div');
+        btn.classList.add('quiz-opt');
+        btn.textContent = optText;
+        btn.addEventListener('click', () => checkAnswer(index));
+        quizOptions.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selectedIndex) {
+      const item = quizData[currentQuest];
+      if (selectedIndex === item.a) {
+        playSound('win');
+        quizFeedback.style.color = '#4CAF50';
+        quizFeedback.textContent = 'Правильно! ✨ Ты умничка!';
+        score++;
+        questStars.textContent = `⭐ ${score}/${quizData.length}`;
+        currentQuest++;
+        setTimeout(loadQuest, 1200);
+      } else {
+        playSound('click');
+        quizFeedback.style.color = '#FF9800';
+        quizFeedback.textContent = 'Почти! Попробуй ещё раз 🥺';
+      }
+    }
+
+    loadQuest();
+
+    /* ==========================================================================
+       LETTER SECTION (TYPING EFFECT)
+       ========================================================================== */
+    const openLetterBtn = document.getElementById('openLetterBtn');
+    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const letterCard = document.getElementById('letterCard');
+    const typedTextEl = document.getElementById('typedText');
+
+    const fullMessage = "Спасибо тебе за все моменты, разговоры, смех и просто за то, что ты есть. Иногда даже обычный день становится намного лучше благодаря одному человеку. И сегодня я просто хотел напомнить тебе, что ты очень важный для меня человек. 💗";
+
+    let isTyping = false;
+
+    function revealLetter() {
+      if (isTyping) return;
+      isTyping = true;
+      playSound('pop');
+
+      envelopeWrapper.style.display = 'none';
+      openLetterBtn.style.display = 'none';
+      letterCard.style.display = 'block';
+
+      let i = 0;
+      typedTextEl.textContent = "";
+      
+      function typeChar() {
+        if (i < fullMessage.length) {
+          typedTextEl.textContent += fullMessage.charAt(i);
+          i++;
+          setTimeout(typeChar, 35);
+        }
+      }
+      typeChar();
+    }
+
+    openLetterBtn.addEventListener('click', revealLetter);
+    envelopeWrapper.addEventListener('click', revealLetter);
+
+    /* ==========================================================================
+       SECRET BUTTON
+       ========================================================================== */
+    let secretCount = 0;
+    const secretBtn = document.getElementById('secretBtn');
+    const secretCounter = document.getElementById('secretCounter');
+
+    secretBtn.addEventListener('click', (e) => {
+      secretCount++;
+      playSound('click');
+      secretCounter.textContent = `Нажатий: ${secretCount}`;
+
+      const rect = secretBtn.getBoundingClientRect();
+
+      if (secretCount === 1) {
+        confetti({ particleCount: 15, spread: 40, origin: { y: 0.7 } });
+      } else if (secretCount === 2) {
+        secretBtn.textContent = 'Ого, ты продолжаешь! 🌸';
+      } else if (secretCount === 3) {
+        confetti({ particleCount: 30, spread: 70, shapes: ['star'], origin: { y: 0.7 } });
+      } else if (secretCount === 4) {
+        triggerPetSpeech('Ты очень любопытная! 🐱');
+      } else if (secretCount >= 5) {
+        secretBtn.textContent = 'Нажми ещё! 💗';
+        confetti({ particleCount: 100, spread: 100, origin: { y: 0.7 } });
+        alert('Ладно, ты нашла секретную кнопку 😂💗');
+      }
+    });
+
+    /* ==========================================================================
+       PET CHARACTER
+       ========================================================================== */
+    const petContainer = document.getElementById('petContainer');
+    const petAvatar = document.getElementById('petAvatar');
+    const petSpeech = document.getElementById('petSpeech');
+
+    const petPhrases = [
+      "Приветик! 🐻",
+      "Ты нашла меня!",
+      "обнимает плюшевого мишку 🧸",
+      "Сегодня ты особенно классная ✨",
+      "Улыбнись! 🌸"
+    ];
+
+    let speechTimeout;
+
+    function triggerPetSpeech(customText) {
+      playSound('pop');
+      petAvatar.classList.add('bounce');
+      setTimeout(() => petAvatar.classList.remove('bounce'), 500);
+
+      const text = customText || petPhrases[Math.floor(Math.random() * petPhrases.length)];
+      petSpeech.textContent = text;
+      petSpeech.classList.add('active');
+
+      clearTimeout(speechTimeout);
+      speechTimeout = setTimeout(() => {
+        petSpeech.classList.remove('active');
+      }, 3000);
+    }
+
+    petContainer.addEventListener('click', () => triggerPetSpeech());
+
+    /* ==========================================================================
+       THEME TOGGLE
+       ========================================================================== */
+    const themeBtn = document.getElementById('themeBtn');
+    let isDark = false;
+
+    themeBtn.addEventListener('click', () => {
+      playSound('click');
+      isDark = !isDark;
+      if (isDark) {
+        document.body.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = '🌙';
+      } else {
+        document.body.removeAttribute('data-theme');
+        themeBtn.textContent = '☀️';
+      }
+    });
+
+    /* ==========================================================================
+       RESTART BUTTON
+       ========================================================================== */
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      playSound('pop');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
+
